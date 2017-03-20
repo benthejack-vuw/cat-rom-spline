@@ -1,13 +1,7 @@
 {
-  "name": "cat-rom-spline",
-  "version": "0.1.3",
+  "name": "cat-rom-spline-generic",
+  "version": "0.0.1",
   "description": "Catmull Rom spline interpolation made easy.",
-  "author": {
-    "name": "Nick Schaubeck",
-    "email": "nschaubeck@gmail.com",
-    "url": "northofbrooklyn.nyc"
-  },
-  "repository": "nschaubeck/cat-rom-spline",
   "license": "MIT",
   "files": [
     "index.js"
@@ -23,19 +17,7 @@
     "gl-vec2": "1.0.0"
   },
   "devDependencies": {
-    "browserify": "9.0.8",
-    "grunt-browserify": "3.7.0",
-    "grunt-cli": "0.1.13",
-    "grunt-contrib-jshint": "0.11.0",
-    "grunt-contrib-nodeunit": "0.4.1",
-    "grunt-contrib-watch": "0.6.1",
-    "grunt-mocha-cli": "1.12.0",
-    "jshint-stylish": "1.0.1",
-    "load-grunt-tasks": "3.1.0",
-    "time-grunt": "1.1.0"
   },
   "scripts": {
-    "test": "grunt",
-    "browser": "browserify index.js > browser.js"
   }
 }

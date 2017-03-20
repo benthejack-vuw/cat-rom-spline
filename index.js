@@ -23,8 +23,8 @@ var interpolatePoint = function(p0, p1, p2, p3, t0, t1, t2, t3, t) {
   return c;
 };
 
-var catmullRomSplineSegment = function(p0, p1, p2, p3, samples, knot) {
-  var t, t0, t1, t2, t3, segmentDist;
+var catmullSegmentAtTime = function(p0, p1, p2, p3, t, knot) {
+  var t0, t1, t2, t3, segmentDist;
   var points = [];
   segmentDist = distance(p1, p2);
 
@@ -33,60 +33,31 @@ var catmullRomSplineSegment = function(p0, p1, p2, p3, samples, knot) {
   t2 = Math.pow(segmentDist, knot) + t1;
   t3 = Math.pow(distance(p2, p3), knot) + t2;
 
-  if (!samples) {
-    samples = segmentDist * 1.5;
-  }
-
-  var sampleStep = (t2 - t1) / samples;
-  t = t1;
-  while (t < t2) {
-    t += sampleStep;
-    points.push(interpolatePoint(p0, p1, p2, p3, t0, t1, t2, t3, t));
-  }
-
-  return points;
+  return interpolatePoint(p0, p1, p2, p3, t0, t1, t2, t3, t);
 };
 
 var catmullRomSpline = function(controlPoints, options) {
   if (controlPoints.length < 4) {
     throw "Must have at least 4 control points to generate catmull rom spline";
   }
+
   var points = [];
   var p0, p1, p2, p3, offset;
 
   options = options || {};
   var knot = options.knot || 0.5;
   var samples = options.samples;
+  var pointsPerSegment = samples/controlPoints.length;
 
-  controlPoints.forEach(function(point, i) {
-    offset = 1;
-    p0 = point;
-
-    do {
-      p1 = controlPoints[i + offset];
-      offset++;
-    } while (p0 && p1 && p0[0] === p1[0] && p0[1] === p1[1]);
-
-    do {
-      p2 = controlPoints[i + offset];
-      offset++;
-    } while (p1 && p2 && p1[0] === p2[0] && p1[1] === p2[1]);
-
-    do {
-      p3 = controlPoints[i + offset];
-      offset++;
-    } while (p2 && p3 && p2[0] === p3[0] && p2[1] === p3[1]);
-
-    if (!(p1 && p2 && p3)) {
-      return;
-    }
-
-    points.push(p1);
-    points = points.concat(catmullRomSplineSegment(p0, p1, p2, p3, samples, knot));
-    if (!controlPoints[offset]) {
-      points.push(p2);
-    }
-  });
+  for(var i = pointsPerSegment; i < samples-pointsPerSegment; ++i){
+    var pos = Math.floor(i/pointsPerSegment);
+    var p0 = controlPoints[pos];
+    var p1 = controlPoints[pos+1];
+    var p2 = controlPoints[pos+2];
+    var p3 = controlPoints[pos+3];
+    var t  = i/pointsPerSegment - Math.floor(i/pointsPerSegment);
+    points.push(catmullSegmentAtTime(p0, p1, p2, p3, t, knot));
+  }
 
   return points;
 };
